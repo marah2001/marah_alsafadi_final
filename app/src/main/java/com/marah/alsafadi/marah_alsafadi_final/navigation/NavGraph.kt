@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.marah.alsafadi.marah_alsafadi_final.model.productList
 import com.marah.alsafadi.marah_alsafadi_final.screens.ProductDetails.ProductDetailsScreen
 import com.marah.alsafadi.marah_alsafadi_final.screens.cart.CartScreen
 import com.marah.alsafadi.marah_alsafadi_final.screens.login.LoginScreen
@@ -33,8 +34,11 @@ fun RootNavGraph(navController: NavHostController) {
             MainContainer(navController = navController)
         }
         // خلي صفحة التفاصيل هون عشان تفتح بملء الشاشة
-        composable("product_details") {
-            ProductDetailsScreen(navController = navController)
+        // جوا الـ NavHost
+        composable("product_details/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId")?.toInt() ?: 0
+            // نرسل المنتج المختار لشاشة التفاصيل
+            ProductDetailsScreen(navController, productList[productId])
         }
         composable(route = "cart") { // تأكدي إن الكلمة هون cart بالظبط
             CartScreen(navController)

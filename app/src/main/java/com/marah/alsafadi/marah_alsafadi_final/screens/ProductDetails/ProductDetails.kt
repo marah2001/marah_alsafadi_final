@@ -48,74 +48,46 @@ import androidx.navigation.compose.rememberNavController
 import com.marah.alsafadi.marah_alsafadi_final.R
 
 @Composable
-fun ProductDetailsScreen(navController: NavHostController) {
+fun ProductDetailsScreen(navController: NavHostController, product: com.marah.alsafadi.marah_alsafadi_final.model.Product) {
     Scaffold(
         bottomBar = {
-            // الجزء السفلي اللي فيه السلة وزر الشراء
-            BottomBuyBar()
+            // نمرر المنتج للسلة عند الضغط على Buy Now
+            BottomBuyBar(product, navController)
         }
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
+            modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
         ) {
-            // 1. الجزء العلوي (السهم والاسم)
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            // 1. الجزء العلوي (سهم الرجوع + اسم المنتج الحقيقي)
+            Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.KeyboardArrowLeft, contentDescription = null)
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null)
                 }
                 Text(
-                    text = "Device Laser Hair Removal",
+                    text = product.name, // الاسم صار يجي من المنتج المختار
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            // 2. الصورة الكبيرة للمنتج
+            // 2. الصورة الحقيقية
             Box(modifier = Modifier.fillMaxWidth().height(300.dp).background(Color(0xFFF9F9F9))) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_foreground), // استبدليها بصورة الجهاز
+                    painter = painterResource(id = product.image), // الصورة من القائمة
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize().padding(20.dp)
                 )
-                // أيقونة القلب فوق الصورة
-                Icon(
-                    imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = null,
-                    modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
-                )
             }
 
-            // 3. السعر والتقييم
+            // 3. السعر الحقيقي والوصف
             Column(modifier = Modifier.padding(16.dp)) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = "$10.00", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                    // العداد ( + 01 - )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = {}) { Icon(painterResource(R.drawable.logo), null, tint = Color.Red) } // تأكدي من وجود الأيقونة
-                        Text("01")
-                        IconButton(onClick = {}) { Icon(Icons.Default.AddCircle, null, tint = Color.Red) }
-                    }
-                }
+                Text(text = product.price, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Color(0xFFB12C2C))
 
-                // كرت التقييم
-                Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-                    Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Star, contentDescription = null, tint = Color.Yellow)
-                        Text(" 4.8 | 50 Orders")
-                    }
-                }
+                Spacer(modifier = Modifier.height(10.dp))
 
-                // 4. الوصف (Description)
                 Text(
-                    text = "1. Applicable: 100-240V working voltage...\n2. Painless: Adjustable optimal energy...\n3. Fast and big treatment area...",
+                    text = "Description for ${product.name}:\nThis is a high quality product from ${product.brand}. Features include long battery life and ergonomic design.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )
@@ -125,24 +97,19 @@ fun ProductDetailsScreen(navController: NavHostController) {
 }
 
 @Composable
-fun BottomBuyBar() {
+fun BottomBuyBar(product: com.marah.alsafadi.marah_alsafadi_final.model.Product, navController: NavHostController) {
     Surface(shadowElevation = 8.dp) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                Icons.Default.ShoppingCart,
-                contentDescription = null,
-                tint = Color.Red,
-                modifier = Modifier.size(30.dp)
-            )
+        Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Default.ShoppingCart, null, tint = Color.Red)
             Spacer(modifier = Modifier.width(16.dp))
             Button(
-                onClick = { /* Buy Now */ },
+                onClick = {
+                    // هاد اللي طلبتيه: يضيف للسلة وينقلنا هناك
+                    com.marah.alsafadi.marah_alsafadi_final.model.cartList.add(product)
+                    navController.navigate("cart")
+                },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB12C2C)),
-                shape = RoundedCornerShape(8.dp)
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB12C2C))
             ) {
                 Text("Buy now", color = Color.White)
             }
