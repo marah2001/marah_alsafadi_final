@@ -4,13 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -22,153 +20,106 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.marah.alsafadi.marah_alsafadi_final.R
-import com.marah.alsafadi.marah_alsafadi_final.model.Product
-
-// 1. تعريف القائمة خارج الـ Composable (أفضل للأداء)
-val productList = listOf(
-    Product("Device Laser Hair", "Qmele", "$18", "$20", "10%", R.drawable.logo),
-    Product("Beauty Blender Set", "Cherry", "$10", "$15", "33%", R.drawable.logo)
-)
+import com.marah.alsafadi.marah_alsafadi_final.components.ProductCard
+import com.marah.alsafadi.marah_alsafadi_final.model.cartList
+import com.marah.alsafadi.marah_alsafadi_final.model.productList
 
 @Composable
-fun HomeScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .verticalScroll(rememberScrollState())
-    ) {
-        // نداء الهيدر
-        HomeHeader()
-
-        // البانر البرتقالي (Lipsticks set)
-        Box(
+fun HomeScreen(navController: NavHostController) {
+    Scaffold { paddingValues ->
+        Column(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-                .height(160.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFFF5C5A8))
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(paddingValues)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = null,
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                contentScale = ContentScale.Fit
-            )
-            Column(modifier = Modifier.padding(20.dp).align(Alignment.CenterStart)) {
-                Text("lipsticks set", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text("$10", color = Color.Red, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Spacer(modifier = Modifier.height(10.dp))
-                Button(
-                    onClick = {},
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA52A2A)),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.height(35.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp)
-                ) {
-                    Text("Shop Now", fontSize = 12.sp, color = Color.White)
+            HomeHeader()
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item(span = { GridItemSpan(2) }) {
+                    // مررنا الـ navController هون عشان يشتغل الزر
+                    LipstickBanner(navController = navController)
+                }
+
+                item(span = { GridItemSpan(2) }) {
+                    Text(
+                        text = "Latest Products",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 10.dp, bottom = 4.dp)
+                    )
+                }
+
+                items(productList.take(4)) { currentProduct ->
+                    ProductCard(
+                        product = currentProduct,
+                        navController = navController
+                    )
                 }
             }
         }
+    }
+}
 
-        Text(
-            text = "Latest Products",
-            modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
+@Composable
+fun LipstickBanner(navController: NavHostController) { // ضفنا الـ Parameter هون
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(160.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(Color(0xFFE9B28F))
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.home1),
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+            contentScale = ContentScale.Fit
         )
 
-        // نداء شبكة المنتجات
-        ProductGrid()
+        Column(modifier = Modifier.padding(20.dp).align(Alignment.CenterStart)) {
+            Text(text = "lipsticks set", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+            Text(text = "$10", fontSize = 26.sp, fontWeight = FontWeight.Bold, color = Color(0xFFB12C2C))
+            Spacer(modifier = Modifier.height(15.dp))
 
-        // مسافة صغيرة في الآخر عشان ما يختفي الكود وراء الـ Bottom Navigation
-        Spacer(modifier = Modifier.height(80.dp))
+            Button(
+                onClick = {
+                    if (productList.isNotEmpty()) { // تأمين عشان ما يعمل كراش لو القائمة فاضية
+                        cartList.add(productList[0])
+                        navController.navigate("cart")
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB12C2C)),
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier.height(40.dp)
+            ) {
+                Text("Shop Now", color = Color.White, fontSize = 14.sp)
+            }
+        }
     }
 }
 
 @Composable
 fun HomeHeader() {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 15.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
-            Text("Good morning", fontSize = 14.sp, color = Color.Gray)
-            Text("Marah Alsafadi", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        }
+        Text(text = "Good morning", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Row {
-            IconButton(onClick = { }) {
-                Icon(Icons.Default.Search, contentDescription = null, tint = Color.Black)
-            }
-            IconButton(onClick = { }) {
-                Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Black)
-            }
-        }
-    }
-}
-
-@Composable
-fun ProductGrid() {
-    // بما إننا جوا Column معمول له Scroll، بنستخدم Column عادي مع Rows لعرض المنتجات
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        productList.chunked(2).forEach { rowItems ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                rowItems.forEach { product ->
-                    Box(modifier = Modifier.weight(1f)) {
-                        ProductItem(product)
-                    }
-                }
-                if (rowItems.size == 1) Spacer(modifier = Modifier.weight(1f))
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-}
-
-@Composable
-fun ProductItem(product: Product) {
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F8F8)),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Box {
-                Image(
-                    painter = painterResource(id = product.image),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxWidth().height(120.dp).clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
-                )
-                Icon(
-                    Icons.Default.FavoriteBorder,
-                    contentDescription = null,
-                    modifier = Modifier.align(Alignment.TopEnd).padding(4.dp).size(20.dp),
-                    tint = Color.Gray
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(product.name, fontWeight = FontWeight.Bold, fontSize = 14.sp, maxLines = 1)
-            Text(product.brand, fontSize = 12.sp, color = Color.Gray)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(product.price, color = Color.Red, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    product.oldPrice,
-                    fontSize = 11.sp,
-                    color = Color.Gray,
-                    style = androidx.compose.ui.text.TextStyle(textDecoration = TextDecoration.LineThrough)
-                )
-            }
+            Icon(Icons.Default.Search, null, modifier = Modifier.size(26.dp).padding(end = 12.dp))
+            Icon(Icons.Default.Notifications, null, modifier = Modifier.size(26.dp), tint = Color(0xFFB12C2C))
         }
     }
 }

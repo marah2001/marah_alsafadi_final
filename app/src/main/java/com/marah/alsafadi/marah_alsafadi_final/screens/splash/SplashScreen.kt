@@ -18,20 +18,24 @@ import kotlinx.coroutines.delay
 fun SplashScreen(navController: NavController) {
 
     LaunchedEffect(key1 = true) {
-        delay(2000L)
-        navController.navigate("login_screen") {
-            popUpTo("splash_screen") { inclusive = true }
+        delay(2000L) // تأخير لمدة ثانيتين
+
+        // التعديل الجوهري هون:
+        // لازم نستخدم "login" عشان يطابق الاسم اللي في الـ RootNavGraph
+        navController.navigate("login") {
+            // وهون لازم نطابق اسم شاشة السبلش "splash" عشان تنحذف من الـ Backstack
+            popUpTo("splash") { inclusive = true }
         }
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF2EADC)),
+            .background(Color(0xFFF2EADC)), // اللون الكريمي الجميل تبعك
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.logo),
+            painter = painterResource(id = R.drawable.logo), // تأكدي إن اسم الصورة logo في مجلد res/drawable
             contentDescription = "Logo",
             modifier = Modifier.size(220.dp)
         )

@@ -19,21 +19,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.marah.alsafadi.marah_alsafadi_final.R
 import com.marah.alsafadi.marah_alsafadi_final.model.Category
 
 // القائمة لازم تكون بره الـ @Composable أو جواها بطريقة صح، هيك صح:
 val categoryList = listOf(
-    Category("Skin creams", R.drawable.logo),
-    Category("Nail products", R.drawable.logo),
-    Category("perfume", R.drawable.logo),
-    Category("Skin care Tools", R.drawable.logo),
-    Category("Makeup", R.drawable.logo),
-    Category("Hair care tools", R.drawable.logo)
+    Category("Skin creams", R.drawable.p1),
+    Category("Nail products", R.drawable.p2),
+    Category("perfume", R.drawable.p3),
+    Category("Skin care Tools", R.drawable.p4),
+    Category("Makeup", R.drawable.p1),
+    Category("Hair care tools", R.drawable.p2)
 )
 
 @Composable
-fun CategoriesScreen() {
+fun CategoriesScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()

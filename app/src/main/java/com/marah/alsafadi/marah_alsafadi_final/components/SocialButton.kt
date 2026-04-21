@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun SocialButton(iconRes: Int, onClick: () -> Unit) {
+fun SocialButton(iconRes: Int, onClick: () -> Unit, text: String) {
 
     Surface(
         modifier = Modifier

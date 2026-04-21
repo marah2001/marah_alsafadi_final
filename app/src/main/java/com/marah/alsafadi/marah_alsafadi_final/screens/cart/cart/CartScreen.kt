@@ -22,50 +22,78 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.marah.alsafadi.marah_alsafadi_final.R
 import com.marah.alsafadi.marah_alsafadi_final.model.Product
-
-// 1. القائمة التجريبية للمنتجات في السلة
-val cartProducts = listOf(
-    Product("Device Laser Hair Rem...", "", "$10.00", "", "", R.drawable.logo),
-    Product("Device Laser Hair Rem...", "", "$10.00", "", "", R.drawable.logo),
-    Product("Device Laser Hair Rem...", "", "$10.00", "", "", R.drawable.logo),
-    Product("Device Laser Hair Rem...", "", "$10.00", "", "", R.drawable.logo)
-)
+import com.marah.alsafadi.marah_alsafadi_final.model.cartList // استيراد القائمة المشتركة
 
 @Composable
-fun CartScreen() {
+fun CartScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             Text(
-                text = "Cart (4)",
+                text = if (cartList.isEmpty()) "Cart" else "Cart (${cartList.size})",
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             )
         },
         bottomBar = {
-            CartBottomSection()
+            // لا نعرض الجزء السفلي إلا إذا كان هناك منتجات
+            if (cartList.isNotEmpty()) {
+                CartBottomSection()
+            }
         }
     ) { paddingValues ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.padding(paddingValues).padding(8.dp),
-            contentPadding = PaddingValues(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(cartProducts) { product ->
-                CartItem(product)
+
+        // فحص حالة السلة
+        if (cartList.isEmpty()) {
+            // الحالة: السلة فاضية (نص أنيق في المنتصف)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground), // تقدري تحطي أيقونة سلة هون
+                        contentDescription = null,
+                        modifier = Modifier.size(100.dp),
+                        tint = Color.LightGray
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Your cart is still empty..\nGo find something you love!",
+                        fontSize = 18.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 24.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        } else {
+            // الحالة: السلة فيها منتجات
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.padding(paddingValues).padding(8.dp),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(cartList) { product ->
+                    CartItem(product)
+                }
             }
         }
     }
 }
 
-// 2. تصميم كرت المنتج في السلة (مع الزيادة والنقصان)
 @Composable
 fun CartItem(product: Product) {
     Card(
@@ -81,9 +109,8 @@ fun CartItem(product: Product) {
                     modifier = Modifier.fillMaxWidth().height(100.dp).clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
-                // زر الحذف (X)
                 IconButton(
-                    onClick = { },
+                    onClick = { cartList.remove(product) }, // ميزة الحذف من السلة
                     modifier = Modifier.align(Alignment.TopEnd).size(24.dp).background(Color.White, CircleShape)
                 ) {
                     Icon(Icons.Default.Close, contentDescription = null, tint = Color.Red, modifier = Modifier.size(16.dp))
@@ -99,35 +126,25 @@ fun CartItem(product: Product) {
             ) {
                 Text(product.price, color = Color.Red, fontWeight = FontWeight.Bold, fontSize = 13.sp)
 
-                // التحكم بالكمية
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Delete, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp).background(Color.LightGray, CircleShape))
                     Text(" 01 ", fontSize = 12.sp)
                     Icon(Icons.Default.Add, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp).background(Color(0xFFA52A2A), CircleShape))
                 }
             }
-
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Buy now", color = Color(0xFFA52A2A), fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                Icon(Icons.Default.Info, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
-            }
         }
     }
 }
 
-// 3. الجزء السفلي (SubTotal وزر Buy Now)
 @Composable
 fun CartBottomSection() {
+    // حساب المجموع (افتراضي)
     Column(
         modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("SubTotal", color = Color.Gray)
-            Text("$45.00", fontWeight = FontWeight.Bold)
+            Text("$${cartList.size * 10}.00", fontWeight = FontWeight.Bold) // مثال بسيط للحساب
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(
@@ -136,7 +153,7 @@ fun CartBottomSection() {
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA52A2A)),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text("Buy now", color = Color.White, fontSize = 16.sp)
+            Text("Checkout Now", color = Color.White, fontSize = 16.sp)
         }
     }
 }
