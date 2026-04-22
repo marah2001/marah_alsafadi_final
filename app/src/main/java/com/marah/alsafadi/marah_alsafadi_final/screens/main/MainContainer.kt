@@ -16,24 +16,20 @@ import com.marah.alsafadi.marah_alsafadi_final.screens.categories.CategoriesScre
 import com.marah.alsafadi.marah_alsafadi_final.screens.home.HomeScreen
 
 @Composable
-fun MainContainer(navController: NavHostController) { // 1. لازم تستقبل الـ rootNavController
-    // 2. تعريف الـ Controller الداخلي الخاص بالـ Bottom Bar فقط
+fun MainContainer(navController: NavHostController) {
     val bottomNavController = rememberNavController()
 
     Scaffold(
         bottomBar = {
-            // نمرر الـ bottomNavController للبار السفلي عشان يشتغل التنقل
             MyBottomNavigation(navController = bottomNavController)
         }
     ) { innerPadding ->
-        // 3. الـ NavHost الداخلي للتبديل بين الشاشات الخمسة
         NavHost(
             navController = bottomNavController,
             startDestination = "home",
             modifier = Modifier.padding(innerPadding)
         ) {
-            // ملاحظة: الشاشات اللي فيها منتجات (Home, Favorite) بنعطيها rootNavController
-            // عشان لما نضغط على المنتج تفتح صفحة التفاصيل بملء الشاشة
+
 
             composable("home") {
                 HomeScreen(navController = navController)

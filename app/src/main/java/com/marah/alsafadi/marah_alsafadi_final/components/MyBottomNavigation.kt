@@ -1,12 +1,12 @@
 package com.marah.alsafadi.marah_alsafadi_final.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite // استيراد القلب
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.* // استيراد Badge و BadgedBox
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
@@ -15,7 +15,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
-// استيراد القائمة عشان نحسب العدد
 import com.marah.alsafadi.marah_alsafadi_final.model.cartList
 
 data class BottomNavItem(
@@ -29,7 +28,7 @@ fun MyBottomNavigation(navController: NavController) {
     val items = listOf(
         BottomNavItem("Home", "home", Icons.Default.Home),
         BottomNavItem("Categories", "categories", Icons.Default.Menu),
-        BottomNavItem("Favorite", "favorite", Icons.Default.Favorite), // إضافة المفضلة هنا
+        BottomNavItem("Favorite", "favorite", Icons.Default.Favorite),
         BottomNavItem("Cart", "cart", Icons.Default.ShoppingCart),
         BottomNavItem("Profile", "profile", Icons.Default.Person)
     )
@@ -41,10 +40,8 @@ fun MyBottomNavigation(navController: NavController) {
         items.forEach { item ->
             NavigationBarItem(
                 icon = {
-                    // --- الكود الذكي هون ---
                     BadgedBox(
                         badge = {
-                            // إذا كانت السلة فيها أغراض وهاد عنصر السلة، اظهر الرقم
                             if (item.route == "cart" && cartList.size > 0) {
                                 Badge(
                                     containerColor = Color(0xFFB12C2C), // أحمر

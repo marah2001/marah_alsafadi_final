@@ -34,9 +34,7 @@ fun FavoriteScreen(navController: NavHostController) {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // بدلاً من السطر القديم اللي فيه خطأ
             items(6) { index ->
-                // لازم نمرر منتج "تجريبي" أو منتج من القائمة
                 ProductCard(
                     product = productList[index % productList.size],
                     navController = navController

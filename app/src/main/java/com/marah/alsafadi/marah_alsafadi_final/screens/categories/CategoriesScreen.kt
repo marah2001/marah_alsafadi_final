@@ -23,7 +23,6 @@ import androidx.navigation.NavHostController
 import com.marah.alsafadi.marah_alsafadi_final.R
 import com.marah.alsafadi.marah_alsafadi_final.model.Category
 
-// القائمة لازم تكون بره الـ @Composable أو جواها بطريقة صح، هيك صح:
 val categoryList = listOf(
     Category("Skin creams", R.drawable.p1),
     Category("Nail products", R.drawable.p2),
@@ -58,7 +57,6 @@ fun CategoriesScreen(navController: NavHostController) {
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            // التصحيح هنا: استخدام دالة items الصحيحة
             items(categoryList) { category ->
                 CategoryItem(category)
             }
