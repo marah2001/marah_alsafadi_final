@@ -82,8 +82,12 @@ fun AccountScreen(navController: NavHostController) {
             Divider(modifier = Modifier.padding(vertical = 15.dp), color = Color(0xFFF1F1F1))
 
             AccountItem("Logout", Icons.Default.ExitToApp, isLogout = true) {
+                // الانتقال لشاشة اللوجن المعرفة في الـ RootNavGraph
                 navController.navigate("login") {
-                    popUpTo(0) // مسح الذاكرة عشان ما يرجع للخلف
+                    // تنظيف كل الشاشات السابقة عشان ما يرجع للهوم لو كبس Back
+                    popUpTo("main_container") {
+                        inclusive = true
+                    }
                 }
             }
         }
@@ -117,9 +121,9 @@ fun ProfileHeader() {
         }
         Spacer(modifier = Modifier.width(15.dp))
         Column {
-            Text("Mona Fadl Al-Harthy", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text("Marah Alsafadi", fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Text("009665211043", color = Color.Gray, fontSize = 14.sp)
-            Text("Mona Fadl@gmail.com", color = Color.Gray, fontSize = 14.sp)
+            Text("marah@gmail.com", color = Color.Gray, fontSize = 14.sp)
         }
     }
 }
