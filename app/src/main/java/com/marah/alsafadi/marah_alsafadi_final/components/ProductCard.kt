@@ -25,7 +25,6 @@ import com.marah.alsafadi.marah_alsafadi_final.model.productList
 
 @Composable
 fun ProductCard(product: Product, navController: NavHostController) {
-    // فحص إذا كان المنتج مضاف للمفضلة حالياً
     val isFavorite = favoriteList.contains(product)
 
     Card(
@@ -33,7 +32,6 @@ fun ProductCard(product: Product, navController: NavHostController) {
             .fillMaxWidth()
             .padding(4.dp)
             .clickable {
-                // الانتقال لصفحة التفاصيل بناءً على ترتيب المنتج في القائمة
                 val index = productList.indexOf(product)
                 if (index != -1) {
                     navController.navigate("product_details/$index")
@@ -44,14 +42,12 @@ fun ProductCard(product: Product, navController: NavHostController) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            // 1. حاوية الصورة والقلب
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(130.dp)
                     .background(Color(0xFFF9F9F9), RoundedCornerShape(8.dp))
             ) {
-                // زر القلب (المفضلة)
                 IconButton(
                     onClick = {
                         if (isFavorite) {
@@ -73,7 +69,6 @@ fun ProductCard(product: Product, navController: NavHostController) {
                     )
                 }
 
-                // صورة المنتج
                 Image(
                     painter = painterResource(id = product.image),
                     contentDescription = null,
@@ -82,7 +77,6 @@ fun ProductCard(product: Product, navController: NavHostController) {
                         .size(90.dp)
                 )
 
-                // ملصق الخصم (اختياري - لو حبيتي تظهريه)
                 if (product.discount.isNotEmpty()) {
                     Box(
                         modifier = Modifier
@@ -97,7 +91,6 @@ fun ProductCard(product: Product, navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 2. تفاصيل النصوص
             Text(
                 text = product.name,
                 fontSize = 14.sp,
@@ -114,7 +107,6 @@ fun ProductCard(product: Product, navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // 3. السعر والمبيعات
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

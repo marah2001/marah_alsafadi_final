@@ -16,31 +16,25 @@ import com.marah.alsafadi.marah_alsafadi_final.screens.splash.SplashScreen
 fun RootNavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "splash", // يبدأ من السكرين تاعت السبلش
+        startDestination = "splash",
         route = "root_graph"
     ) {
-        // 1. شاشة السبلش
         composable(route = "splash") {
             SplashScreen(navController = navController)
         }
 
-        // 2. شاشة اللوجن
         composable(route = "login") {
             LoginScreen(navController = navController)
         }
 
-        // 3. الحاوية الرئيسية (اللي فيها الـ Bottom Bar)
         composable(route = "main_container") {
             MainContainer(navController = navController)
         }
-        // خلي صفحة التفاصيل هون عشان تفتح بملء الشاشة
-        // جوا الـ NavHost
         composable("product_details/{productId}") { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId")?.toInt() ?: 0
-            // نرسل المنتج المختار لشاشة التفاصيل
             ProductDetailsScreen(navController, productList[productId])
         }
-        composable(route = "cart") { // تأكدي إن الكلمة هون cart بالظبط
+        composable(route = "cart") {
             CartScreen(navController)
         }
     }

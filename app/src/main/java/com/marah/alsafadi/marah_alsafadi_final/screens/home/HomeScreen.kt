@@ -47,7 +47,6 @@ fun HomeScreen(navController: NavHostController) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 item(span = { GridItemSpan(2) }) {
-                    // مررنا الـ navController هون عشان يشتغل الزر
                     LipstickBanner(navController = navController)
                 }
 
@@ -72,7 +71,7 @@ fun HomeScreen(navController: NavHostController) {
 }
 
 @Composable
-fun LipstickBanner(navController: NavHostController) { // ضفنا الـ Parameter هون
+fun LipstickBanner(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -94,7 +93,7 @@ fun LipstickBanner(navController: NavHostController) { // ضفنا الـ Parame
 
             Button(
                 onClick = {
-                    if (productList.isNotEmpty()) { // تأمين عشان ما يعمل كراش لو القائمة فاضية
+                    if (productList.isNotEmpty()) {
                         cartList.add(productList[0])
                         navController.navigate("cart")
                     }

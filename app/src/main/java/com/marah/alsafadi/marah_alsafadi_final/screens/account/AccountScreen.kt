@@ -1,80 +1,175 @@
 package com.marah.alsafadi.marah_alsafadi_final.screens.account
-import androidx.compose.foundation.background
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.marah.alsafadi.marah_alsafadi_final.R
+import com.marah.alsafadi.marah_alsafadi_final.model.cartList
+
 @Composable
 fun AccountScreen(navController: NavHostController) {
-    // 1. تعريف المتغيرات اللي رح تتغير (State)
-    var name by remember { mutableStateOf("Marah Fadi Al-Harthy") }
-    var phone by remember { mutableStateOf("0599001122") }
-    var email by remember { mutableStateOf("Marah.fadi@gmail.com") }
+    val context = LocalContext.current
+    var showPaymentDialog by remember { mutableStateOf(false) }
+    var showSettingsDialog by remember { mutableStateOf(false) }
 
-    // حالة بتحدد إذا إحنا حالياً بنعدل أو بس بنعرض
-    var isEditing by remember { mutableStateOf(false) }
-
-    Column(modifier = Modifier.fillMaxSize().padding(20.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .verticalScroll(rememberScrollState())
+    ) {
         Text(
             text = "Account",
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleLarge
+            modifier = Modifier.fillMaxWidth().padding(top = 40.dp, bottom = 20.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold
         )
+
+        ProfileHeader()
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        if (!isEditing) {
-            // واجهة العرض العادية (زي ما هي بالصورة)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // ... كود الصورة والمعلومات ...
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(text = name, fontWeight = FontWeight.Bold)
-                    Text(text = phone, color = Color.Gray)
-                    Text(text = email, color = Color.Gray)
-                }
-                IconButton(onClick = { isEditing = true }) { // عند الضغط على القلم
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = null, tint = Color.Blue)
-                }
-            }
-        } else {
-            // "الفريم" أو واجهة التعديل
-            Column(modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp)) {
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") })
-                OutlinedTextField(value = phone, onValueChange = { phone = it }, label = { Text("Phone") })
-                OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") })
+        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
 
-                Button(
-                    onClick = { isEditing = false }, // هون السحر: بيسكر التعديل وبيرجع يعرض البيانات الجديدة
-                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
-                ) {
-                    Text("Save Changes")
+            AccountItem("My order", Icons.Default.DateRange, badgeCount = cartList.size) {
+                navController.navigate("cart")
+            }
+
+            AccountItem("payment method", Icons.Default.Refresh) {
+                showPaymentDialog = true
+            }
+
+            AccountItem("shipping address", Icons.Default.LocationOn) {
+                val gmmIntentUri = Uri.parse("geo:31.5,34.4667?q=Gaza")
+                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                context.startActivity(mapIntent)
+            }
+
+            Divider(modifier = Modifier.padding(vertical = 15.dp), color = Color(0xFFF1F1F1))
+
+            AccountItem("FQA", Icons.Default.Info) {
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com"))
+                context.startActivity(browserIntent)
+            }
+
+            AccountItem("invite friends", Icons.Default.Share) {
+                Toast.makeText(context, "سيتم اضافة هذه الميزة قريبا", Toast.LENGTH_SHORT).show()
+            }
+
+            AccountItem("settings", Icons.Default.Settings) {
+                showSettingsDialog = true
+            }
+
+            Divider(modifier = Modifier.padding(vertical = 15.dp), color = Color(0xFFF1F1F1))
+
+            AccountItem("Logout", Icons.Default.ExitToApp, isLogout = true) {
+                navController.navigate("login") {
+                    popUpTo(0) // مسح الذاكرة عشان ما يرجع للخلف
                 }
             }
         }
     }
+
+    if (showPaymentDialog) {
+        PaymentMethodDialog { showPaymentDialog = false }
+    }
+    if (showSettingsDialog) {
+        SettingsDialog { showSettingsDialog = false }
+    }
+}
+
+@Composable
+fun ProfileHeader() {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 25.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box {
+            Image(
+                painter = painterResource(id = R.drawable.home1),
+                contentDescription = null,
+                modifier = Modifier.size(80.dp).clip(CircleShape).border(1.dp, Color.Gray, CircleShape)
+            )
+            Icon(
+                Icons.Default.Edit, "Edit",
+                modifier = Modifier.align(Alignment.BottomEnd).size(24.dp).background(Color.Red, CircleShape).padding(4.dp),
+                tint = Color.White
+            )
+        }
+        Spacer(modifier = Modifier.width(15.dp))
+        Column {
+            Text("Mona Fadl Al-Harthy", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text("009665211043", color = Color.Gray, fontSize = 14.sp)
+            Text("Mona Fadl@gmail.com", color = Color.Gray, fontSize = 14.sp)
+        }
+    }
+}
+
+@Composable
+fun AccountItem(title: String, icon: ImageVector, badgeCount: Int = 0, isLogout: Boolean = false, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable { onClick() }.padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon, null, modifier = Modifier.size(24.dp), tint = if (isLogout) Color.Gray else Color.Black)
+        Spacer(modifier = Modifier.width(15.dp))
+        Text(text = title, modifier = Modifier.weight(1f), fontSize = 15.sp)
+        if (badgeCount > 0) {
+            Text(text = badgeCount.toString(), color = Color.Red, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+fun PaymentMethodDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Payment Methods") },
+        text = {
+            Column {
+                Text("• Google Pay", modifier = Modifier.padding(8.dp))
+                Text("• Apple Pay", modifier = Modifier.padding(8.dp))
+                Text("• Credit Card", modifier = Modifier.padding(8.dp))
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Close") } }
+    )
+}
+
+@Composable
+fun SettingsDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Settings") },
+        text = {
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Change Theme")
+                    Spacer(modifier = Modifier.weight(1f))
+                    Switch(checked = false, onCheckedChange = {})
+                }
+                Text("Change Language", modifier = Modifier.padding(vertical = 10.dp))
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Save") } }
+    )
 }

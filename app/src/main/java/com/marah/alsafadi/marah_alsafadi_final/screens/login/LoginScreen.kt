@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,7 +30,6 @@ fun LoginScreen(navController: NavHostController) {
     val allowedEmails = listOf("marah@gmail.com", "admin@marah.com")
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // 1. خلفية متدرجة ناعمة لإضافة فخامة
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -49,7 +47,6 @@ fun LoginScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // 2. شعار التطبيق بشكل أرتب
             Surface(
                 modifier = Modifier.size(100.dp),
                 shape = CircleShape,
@@ -80,7 +77,6 @@ fun LoginScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // 3. حقول إدخال عصرية (Modern TextFields)
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -112,7 +108,6 @@ fun LoginScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            // 4. زر Login عريض وفخم
             Button(
                 onClick = {
                     if (email in allowedEmails) {
@@ -134,7 +129,6 @@ fun LoginScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // 5. قسم السوشيال ميديا بتنسيق دائري نظيف
             Text(text = "━━  Or connect with  ━━", color = Color.Gray, fontSize = 12.sp)
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -143,8 +137,8 @@ fun LoginScreen(navController: NavHostController) {
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                SocialCircleButton(R.drawable.ic_google) { /* Google Action */ }
-                SocialCircleButton(R.drawable.ic_facebook) { /* Facebook Action */ }
+                SocialCircleButton(R.drawable.ic_google) {}
+                SocialCircleButton(R.drawable.ic_facebook) { }
             }
         }
     }

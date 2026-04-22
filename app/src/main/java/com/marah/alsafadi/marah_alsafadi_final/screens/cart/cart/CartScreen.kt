@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.marah.alsafadi.marah_alsafadi_final.R
 import com.marah.alsafadi.marah_alsafadi_final.model.Product
-import com.marah.alsafadi.marah_alsafadi_final.model.cartList // استيراد القائمة المشتركة
+import com.marah.alsafadi.marah_alsafadi_final.model.cartList
 
 @Composable
 fun CartScreen(navController: NavHostController) {
@@ -43,16 +42,13 @@ fun CartScreen(navController: NavHostController) {
             )
         },
         bottomBar = {
-            // لا نعرض الجزء السفلي إلا إذا كان هناك منتجات
             if (cartList.isNotEmpty()) {
                 CartBottomSection()
             }
         }
     ) { paddingValues ->
 
-        // فحص حالة السلة
         if (cartList.isEmpty()) {
-            // الحالة: السلة فاضية (نص أنيق في المنتصف)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -61,7 +57,7 @@ fun CartScreen(navController: NavHostController) {
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground), // تقدري تحطي أيقونة سلة هون
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
                         contentDescription = null,
                         modifier = Modifier.size(100.dp),
                         tint = Color.LightGray
@@ -78,7 +74,6 @@ fun CartScreen(navController: NavHostController) {
                 }
             }
         } else {
-            // الحالة: السلة فيها منتجات
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.padding(paddingValues).padding(8.dp),
@@ -138,13 +133,12 @@ fun CartItem(product: Product) {
 
 @Composable
 fun CartBottomSection() {
-    // حساب المجموع (افتراضي)
     Column(
         modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("SubTotal", color = Color.Gray)
-            Text("$${cartList.size * 10}.00", fontWeight = FontWeight.Bold) // مثال بسيط للحساب
+            Text("$${cartList.size * 10}.00", fontWeight = FontWeight.Bold)
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(

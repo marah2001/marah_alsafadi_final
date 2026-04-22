@@ -1,11 +1,6 @@
 package com.marah.alsafadi.marah_alsafadi_final.screens.ProductDetails
-import android.os.Bundle
-import android.view.Surface
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,21 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,43 +32,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.marah.alsafadi.marah_alsafadi_final.R
 
 @Composable
 fun ProductDetailsScreen(navController: NavHostController, product: com.marah.alsafadi.marah_alsafadi_final.model.Product) {
     Scaffold(
         bottomBar = {
-            // نمرر المنتج للسلة عند الضغط على Buy Now
             BottomBuyBar(product, navController)
         }
     ) { padding ->
         Column(
             modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
         ) {
-            // 1. الجزء العلوي (سهم الرجوع + اسم المنتج الحقيقي)
             Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null)
                 }
                 Text(
-                    text = product.name, // الاسم صار يجي من المنتج المختار
+                    text = product.name,
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            // 2. الصورة الحقيقية
             Box(modifier = Modifier.fillMaxWidth().height(300.dp).background(Color(0xFFF9F9F9))) {
                 Image(
-                    painter = painterResource(id = product.image), // الصورة من القائمة
+                    painter = painterResource(id = product.image),
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize().padding(20.dp)
                 )
             }
 
-            // 3. السعر الحقيقي والوصف
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(text = product.price, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Color(0xFFB12C2C))
 
@@ -104,7 +86,6 @@ fun BottomBuyBar(product: com.marah.alsafadi.marah_alsafadi_final.model.Product,
             Spacer(modifier = Modifier.width(16.dp))
             Button(
                 onClick = {
-                    // هاد اللي طلبتيه: يضيف للسلة وينقلنا هناك
                     com.marah.alsafadi.marah_alsafadi_final.model.cartList.add(product)
                     navController.navigate("cart")
                 },
