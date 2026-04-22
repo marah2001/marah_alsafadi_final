@@ -6,6 +6,8 @@ import com.marah.alsafadi.marah_alsafadi_final.R
 // هاد هو تعريف الـ cartList (السلة)
 // لازم يكون "برا" الكلاس عشان كل الشاشات تشوفه
 val cartList = mutableStateListOf<Product>()
+// قائمة المفضلة العالمية
+val favoriteList = mutableStateListOf<Product>()
 
 // هاد تعريف شكل المنتج
 data class Product(
