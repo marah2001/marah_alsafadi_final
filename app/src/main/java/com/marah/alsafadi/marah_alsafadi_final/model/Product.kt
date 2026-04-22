@@ -6,13 +6,16 @@ import com.marah.alsafadi.marah_alsafadi_final.R
 val cartList = mutableStateListOf<Product>()
 val favoriteList = mutableStateListOf<Product>()
 
+// في ملف Product.kt
 data class Product(
     val name: String,
     val brand: String,
     val price: String,
     val oldPrice: String,
     val discount: String,
-    val image: Int
+    val image: Int,
+    // --- هاد هو "الهبل" اللي كان ناقصنا! ---
+    var quantity: Int = 1
 )
 
 val productList = listOf(

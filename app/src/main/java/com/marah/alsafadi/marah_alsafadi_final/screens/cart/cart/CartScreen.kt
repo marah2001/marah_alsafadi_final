@@ -9,9 +9,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,12 +26,14 @@ import androidx.navigation.NavHostController
 import com.marah.alsafadi.marah_alsafadi_final.R
 import com.marah.alsafadi.marah_alsafadi_final.model.Product
 import com.marah.alsafadi.marah_alsafadi_final.model.cartList
+import com.marah.alsafadi.marah_alsafadi_final.model.favoriteList
 
 @Composable
 fun CartScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             Text(
+                // تحديث العنوان بعدد العناصر الحقيقي
                 text = if (cartList.isEmpty()) "Cart" else "Cart (${cartList.size})",
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 textAlign = TextAlign.Center,
@@ -47,30 +47,13 @@ fun CartScreen(navController: NavHostController) {
             }
         }
     ) { paddingValues ->
-
         if (cartList.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
+            // شاشة السلة الفارغة
+            Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                        contentDescription = null,
-                        modifier = Modifier.size(100.dp),
-                        tint = Color.LightGray
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Your cart is still empty..\nGo find something you love!",
-                        fontSize = 18.sp,
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center,
-                        lineHeight = 24.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                    Icon(painterResource(R.drawable.ic_launcher_foreground), null, Modifier.size(100.dp), Color.LightGray)
+                    Spacer(Modifier.height(16.dp))
+                    Text("Your cart is still empty..\nGo find something you love!", color = Color.Gray, textAlign = TextAlign.Center)
                 }
             }
         } else {
@@ -91,6 +74,8 @@ fun CartScreen(navController: NavHostController) {
 
 @Composable
 fun CartItem(product: Product) {
+    val isFavorite = favoriteList.contains(product)
+
     Card(
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9)),
         shape = RoundedCornerShape(12.dp),
@@ -104,11 +89,12 @@ fun CartItem(product: Product) {
                     modifier = Modifier.fillMaxWidth().height(100.dp).clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
+                // زر X للحذف من السلة
                 IconButton(
-                    onClick = { cartList.remove(product) }, // ميزة الحذف من السلة
-                    modifier = Modifier.align(Alignment.TopEnd).size(24.dp).background(Color.White, CircleShape)
+                    onClick = { cartList.remove(product) },
+                    modifier = Modifier.align(Alignment.TopEnd).size(24.dp).background(Color.White.copy(alpha = 0.8f), CircleShape)
                 ) {
-                    Icon(Icons.Default.Close, contentDescription = null, tint = Color.Red, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.Close, null, tint = Color.Red, modifier = Modifier.size(14.dp))
                 }
             }
 
@@ -121,11 +107,45 @@ fun CartItem(product: Product) {
             ) {
                 Text(product.price, color = Color.Red, fontWeight = FontWeight.Bold, fontSize = 13.sp)
 
+                // تحكم الكمية (+ و -)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Delete, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp).background(Color.LightGray, CircleShape))
-                    Text(" 01 ", fontSize = 12.sp)
-                    Icon(Icons.Default.Add, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp).background(Color(0xFFA52A2A), CircleShape))
+                    // زر الناقص
+                    IconButton(
+                        onClick = { if (product.quantity > 1) {
+                            val index = cartList.indexOf(product)
+                            cartList[index] = product.copy(quantity = product.quantity - 1)
+                        }},
+                        modifier = Modifier.size(20.dp).background(Color.LightGray, CircleShape)
+                    ) {
+                        Icon(Icons.Default.Delete, null, tint = Color.White, modifier = Modifier.size(12.dp))
+                    }
+
+                    Text(" ${String.format("%02d", product.quantity)} ", fontSize = 12.sp)
+
+                    // زر الزائد
+                    IconButton(
+                        onClick = {
+                            val index = cartList.indexOf(product)
+                            cartList[index] = product.copy(quantity = product.quantity + 1)
+                        },
+                        modifier = Modifier.size(20.dp).background(Color(0xFFB12C2C), CircleShape)
+                    ) {
+                        Icon(Icons.Default.Add, null, tint = Color.White, modifier = Modifier.size(12.dp))
+                    }
                 }
+            }
+
+            // إضافة زر القلب للحذف من المفضلة إذا أردتِ
+            IconButton(
+                onClick = { if (isFavorite) favoriteList.remove(product) else favoriteList.add(product) },
+                modifier = Modifier.align(Alignment.End).size(24.dp)
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = null,
+                    tint = if (isFavorite) Color.Red else Color.Gray,
+                    modifier = Modifier.size(18.dp)
+                )
             }
         }
     }
@@ -133,18 +153,21 @@ fun CartItem(product: Product) {
 
 @Composable
 fun CartBottomSection() {
-    Column(
-        modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp)
-    ) {
+    // حساب المجموع الحقيقي بناءً على السعر والكمية
+    val subTotal = cartList.sumOf {
+        it.price.replace("$", "").trim().toDoubleOrNull() ?: 0.0 * it.quantity
+    }
+
+    Column(modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("SubTotal", color = Color.Gray)
-            Text("$${cartList.size * 10}.00", fontWeight = FontWeight.Bold)
+            Text("$${String.format("%.2f", subTotal)}", fontWeight = FontWeight.Bold)
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
         Button(
-            onClick = { },
+            onClick = { /* تفاصيل الدفع */ },
             modifier = Modifier.fillMaxWidth().height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA52A2A)),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB12C2C)),
             shape = RoundedCornerShape(8.dp)
         ) {
             Text("Checkout Now", color = Color.White, fontSize = 16.sp)
